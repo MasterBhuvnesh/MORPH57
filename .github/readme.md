@@ -10,7 +10,7 @@ Beyond simple formatting, MORPH57 focuses on:
 
 
 ##  Contributors
-
+<center>
 <table>
   <tr>
     <th>GitHub Profile</th>
@@ -31,4 +31,17 @@ Beyond simple formatting, MORPH57 focuses on:
       </ul>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/YashNandanwar.png" width="40" height="40" style="border-radius:50%;" alt="Yash Nandanwar" />
+    </td>
+    <td><b>Yash Nandanwar</b></td>
+    <td><code>YashNandanwar</code></td>
+    <td>
+      <ul>
+        <li><a href="https://github.com/YashNandanwar" target="_blank">GitHub</a></li>
+      </ul>
+    </td>
+  </tr>
 </table>
+<center>
