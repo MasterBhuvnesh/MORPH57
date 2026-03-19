@@ -40,7 +40,7 @@ export default function Home() {
             Get Started
           </Link>
           <Link href="#features" className="px-8 py-3 rounded-full bg-white text-slate-900 border border-slate-200 font-medium hover:bg-slate-50 transition-colors shadow-sm hover:shadow-md transform hover:-translate-y-0.5 duration-200">
-            Learn More
+            by MasterBhuvnesh
           </Link>
         </div>
       </div>
