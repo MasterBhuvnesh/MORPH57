@@ -168,20 +168,6 @@ export default function Home() {
               >
                 Create account
               </Link>
-              <Link
-                href="/auth/login"
-                className="lg:hidden text-sm font-medium transition-colors hover:opacity-80"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Log in
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                className="lg:hidden text-sm font-medium px-4 py-1.5 rounded-full border-2 transition-colors hover:bg-orange-50"
-                style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
-              >
-                Create account
-              </Link>
               <button
                 className="lg:hidden p-2 rounded-lg"
                 aria-label="Open menu"
