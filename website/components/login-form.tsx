@@ -2,19 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { Mirage } from "ldrs/react";
+import "ldrs/react/Mirage.css";
 
 export function LoginForm({
   className,
@@ -38,7 +31,6 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/protected");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -48,63 +40,105 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/sign-up"
-                className="underline underline-offset-4"
-              >
-                Sign up
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+    <div className={cn("flex flex-col gap-8", className)} {...props}>
+      <div className="text-center">
+        <Link
+          href="/"
+          className="flex items-center justify-center mb-8"
+        >
+          <Mirage size="60" speed="7" color="#f26522" />
+        </Link>
+        <h1
+          className="text-xl font-medium"
+          style={{ color: "var(--text-primary)" }}
+        >
+          Welcome back
+        </h1>
+        <p className="text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
+          Enter your credentials to access your account
+        </p>
+      </div>
+
+      <form onSubmit={handleLogin} className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="email"
+            className="text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            autoComplete="email"
+            className="auth-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Password
+            </label>
+            <Link
+              href="/auth/forgot-password"
+              className="text-xs transition-colors hover:opacity-70"
+              style={{ color: "var(--accent-orange)" }}
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <input
+            id="password"
+            type="password"
+            required
+            autoComplete="current-password"
+            className="auth-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {error && (
+          <p className="text-sm px-1" style={{ color: "#dc2626" }}>
+            {error}
+          </p>
+        )}
+
+        <button type="submit" className="auth-btn" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <>
+              Sign in
+              <ArrowRight size={16} />
+            </>
+          )}
+        </button>
+      </form>
+
+      <p
+        className="text-center text-sm"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/auth/sign-up"
+          className="font-medium transition-colors hover:opacity-70"
+          style={{ color: "var(--accent-orange)" }}
+        >
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 }

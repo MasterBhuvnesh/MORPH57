@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { Mirage } from "ldrs/react";
 import "ldrs/react/Mirage.css";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 
 const navLinks = [
   { label: "Features", hasDropdown: false },
@@ -24,11 +25,69 @@ const examplePrompts = [
   "Software engineer",
 ];
 
+const headingWords = "ATS-Ready Resumes Instantly".split(" ");
+
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      tl.fromTo(
+        ".nav-bar",
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.5 }
+      );
+
+      tl.fromTo(
+        ".banner",
+        { opacity: 0, y: -10, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4 },
+        "-=0.2"
+      );
+
+      tl.fromTo(
+        ".hero-word",
+        { opacity: 0, filter: "blur(12px)", y: 10 },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 0.6,
+          stagger: 0.15,
+        },
+        "-=0.1"
+      );
+
+      tl.fromTo(
+        ".hero-subtitle",
+        { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        "-=0.2"
+      );
+
+      tl.fromTo(
+        ".input-card-wrapper",
+        { opacity: 0, scale: 0.97 },
+        { opacity: 1, scale: 1, duration: 0.6 },
+        "-=0.2"
+      );
+
+      tl.fromTo(
+        ".example-section",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        "-=0.2"
+      );
+    }, mainRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <main className="min-h-screen flex flex-col relative overflow-hidden" style={{ backgroundColor: "var(--bg-cream)" }}>
+    <main ref={mainRef} className="min-h-screen flex flex-col relative overflow-hidden" style={{ backgroundColor: "var(--bg-cream)" }}>
       {/* Subtle background gradient circles */}
       <div className="pointer-events-none absolute inset-0 -z-0">
         <div
@@ -66,7 +125,7 @@ export default function Home() {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 w-full flex justify-center px-4 py-3 md:px-8">
+      <nav className="nav-bar relative z-10 w-full flex justify-center px-4 py-3 md:px-8" style={{ opacity: 0 }}>
         <div className="w-full max-w-[1400px] flex justify-between items-center">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
@@ -127,7 +186,7 @@ export default function Home() {
       </nav>
 
       {/* Banner */}
-      <div className="relative z-10 flex justify-center px-4 pt-2 pb-4">
+      <div className="banner relative z-10 flex justify-center px-4 pt-2 pb-4" style={{ opacity: 0 }}>
         <div
           className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full text-sm"
           style={{ backgroundColor: "#fde8d8", color: "var(--text-primary)" }}
@@ -145,16 +204,20 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-8 md:pt-16 pb-8">
-        <span className="hero-heading text-center">
-          ATS-Ready Resumes Instantly
+        <span className="hero-heading text-center flex flex-wrap justify-center gap-x-[0.3em]">
+          {headingWords.map((word, i) => (
+            <span key={i} className="hero-word inline-block" style={{ opacity: 0 }}>
+              {word}
+            </span>
+          ))}
         </span>
 
-        <p className="mt-5 text-center max-w-lg hero-subtitle">
+        <p className="mt-5 text-center max-w-lg hero-subtitle" style={{ opacity: 0 }}>
           Turn job descriptions into tailored LaTeX resumes
         </p>
 
         {/* Input Area */}
-        <div className="mt-10 w-full max-w-2xl">
+        <div className="input-card-wrapper mt-10 w-full max-w-2xl" style={{ opacity: 0 }}>
           <div className="input-card">
             <div className="flex items-center gap-3">
               <input
@@ -187,11 +250,11 @@ export default function Home() {
         </div>
 
         {/* Example Prompts */}
-        <div className="mt-10 flex flex-col items-center gap-3">
+        <div className="example-section mt-10 flex flex-col items-center gap-3" style={{ opacity: 0 }}>
           <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
             <span>Try a resume example</span>
             <button
-              className="p-1 rounded hover:bg-black/5 transition-colors"
+              className="p-1 rounded transition-colors"
               aria-label="Refresh examples"
             >
               <RefreshCw size={14} />

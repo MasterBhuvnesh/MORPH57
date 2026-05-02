@@ -2,18 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { Mirage } from "ldrs/react";
+import "ldrs/react/Mirage.css";
 
 export function UpdatePasswordForm({
   className,
@@ -24,7 +18,7 @@ export function UpdatePasswordForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
@@ -33,7 +27,6 @@ export function UpdatePasswordForm({
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/protected");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -43,36 +36,62 @@ export function UpdatePasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
-            Please enter your new password below.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleForgotPassword}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="password">New password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="New password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+    <div className={cn("flex flex-col gap-8", className)} {...props}>
+      <div className="text-center">
+        <Link
+          href="/"
+          className="flex items-center justify-center mb-8"
+        >
+          <Mirage size="60" speed="7" color="#f26522" />
+        </Link>
+        <h1
+          className="text-xl font-medium"
+          style={{ color: "var(--text-primary)" }}
+        >
+          Set new password
+        </h1>
+        <p className="text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
+          Enter your new password below
+        </p>
+      </div>
+
+      <form onSubmit={handleUpdatePassword} className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
+            New password
+          </label>
+          <input
+            id="password"
+            type="password"
+            required
+            autoComplete="new-password"
+            className="auth-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {error && (
+          <p className="text-sm px-1" style={{ color: "#dc2626" }}>
+            {error}
+          </p>
+        )}
+
+        <button type="submit" className="auth-btn" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <>
+              Save password
+              <ArrowRight size={16} />
+            </>
+          )}
+        </button>
+      </form>
     </div>
   );
 }
