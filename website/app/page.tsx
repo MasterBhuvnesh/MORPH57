@@ -7,20 +7,21 @@ import {
   ArrowRight,
   RefreshCw,
 } from "lucide-react";
+import { Mirage } from "ldrs/react";
+import "ldrs/react/Mirage.css";
 import { useState } from "react";
 
 const navLinks = [
-  { label: "Products", hasDropdown: true },
-  { label: "For Work", hasDropdown: true },
-  { label: "Resources", hasDropdown: true },
-  { label: "Security", hasDropdown: false },
+  { label: "Features", hasDropdown: false },
+  { label: "Examples", hasDropdown: false },
+  { label: "Templates", hasDropdown: false },
   { label: "Pricing", hasDropdown: false },
 ];
 
 const examplePrompts = [
-  "Mobile app proposal",
-  "3D racing game",
-  "Beginner running tracker",
+  "Frontend developer",
+  "Data analyst",
+  "Software engineer",
 ];
 
 export default function Home() {
@@ -69,10 +70,9 @@ export default function Home() {
         <div className="w-full max-w-[1400px] flex justify-between items-center">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <path d="M8 6L18 16L8 26" stroke="#f26522" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M14 6L24 16L14 26" stroke="#f26522" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.5"/>
-              </svg>
+              <span className="px-2">
+                <Mirage size="50" speed="7" color="#f26522" />
+              </span>
               <span className="text-xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
                 MORPH57
               </span>
@@ -82,8 +82,7 @@ export default function Home() {
               {navLinks.map((link) => (
                 <button
                   key={link.label}
-                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-full transition-colors hover:bg-black/5"
-                  style={{ color: "#555555" }}
+                  className="nav-link flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-full transition-colors hover:bg-black/5"
                 >
                   {link.label}
                   {link.hasDropdown && <ChevronDown size={14} />}
@@ -91,13 +90,10 @@ export default function Home() {
               ))}
               <Link
                 href="#"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full text-white"
+                className="flex items-center gap-1.5 ml-3 px-3 py-1.5 text-sm font-semibold rounded-full text-white"
                 style={{ backgroundColor: "var(--accent-orange)" }}
               >
-                Agent
-                <span className="bg-white/25 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  4
-                </span>
+                Try Free
               </Link>
             </div>
           </div>
@@ -136,13 +132,13 @@ export default function Home() {
           className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full text-sm"
           style={{ backgroundColor: "#fde8d8", color: "var(--text-primary)" }}
         >
-          <span>MORPH57 Agent is free on May 2nd for our 10th birthday!</span>
+          <span>Smart resume generation, zero setup required.</span>
           <Link
             href="#"
             className="font-semibold underline underline-offset-2 hover:opacity-80"
             style={{ color: "var(--text-primary)" }}
           >
-            Learn more
+            Explore
           </Link>
         </div>
       </div>
@@ -150,11 +146,11 @@ export default function Home() {
       {/* Hero Section */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-8 md:pt-16 pb-8">
         <span className="hero-heading text-center">
-          What will you build?
+          ATS-Ready Resumes Instantly
         </span>
 
-        <p className="mt-5 text-center max-w-md hero-subtitle">
-          Turn ideas into apps in minutes — no coding needed
+        <p className="mt-5 text-center max-w-lg hero-subtitle">
+          Turn job descriptions into tailored LaTeX resumes
         </p>
 
         {/* Input Area */}
@@ -163,7 +159,7 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <input
                 type="text"
-                placeholder="Describe your idea, MORPH57 will bring it to life..."
+                placeholder="Paste job description here"
                 className="flex-1 text-[15px] outline-none bg-transparent"
                 style={{ color: "var(--text-primary)" }}
                 value={inputValue}
@@ -193,7 +189,7 @@ export default function Home() {
         {/* Example Prompts */}
         <div className="mt-10 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-            <span>Try an example prompt</span>
+            <span>Try a resume example</span>
             <button
               className="p-1 rounded hover:bg-black/5 transition-colors"
               aria-label="Refresh examples"
