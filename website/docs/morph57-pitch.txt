@@ -1,0 +1,22 @@
+Short (250 chars):
+MORPH57 is an AI-powered resume builder that transforms job descriptions into ATS-optimized resumes instantly. Paste a JD, pick a template, and get a tailored, professional resume ready to submit — no formatting, no guesswork, just results.
+
+Detailed:
+
+MORPH57 is an AI-powered resume builder designed to eliminate the pain of tailoring resumes for every job application.
+
+The problem: Job seekers spend hours manually tweaking resumes for each application, often missing critical ATS keywords, formatting inconsistently, and guessing what recruiters want to see.
+
+The solution: Paste a job description, and MORPH57's AI instantly generates a professionally formatted, ATS-optimized resume tailored to that specific role. It analyzes the JD, identifies key skills and requirements, and structures your experience to match what hiring systems and recruiters are looking for.
+
+Key features:
+- Instant resume generation from any job description
+- ATS-optimized formatting that passes automated screening
+- Multiple professional templates to match different industries
+- Smart JD parsing that highlights what matters
+- Resume history so you can track and revisit past applications
+- Export in multiple formats (PDF and source files)
+
+Who it's for: Job seekers, career switchers, students entering the workforce, and anyone tired of spending more time formatting resumes than actually applying.
+
+The vision: One paste, one click, one perfect resume — every time.
