@@ -289,8 +289,8 @@ export default function Home() {
             {navLinks.map((link) => (
               <button
                 key={link.label}
-                className="mobile-menu-link flex items-center justify-between py-5 text-2xl font-medium border-b"
-                style={{ color: "var(--text-primary)", borderColor: "var(--border-light)", opacity: 0 }}
+                className="mobile-menu-link flex items-center justify-between py-5 text-[23px] font-normal border-b"
+                style={{ color: "#3a3a3a", borderColor: "var(--border-light)", opacity: 0 }}
               >
                 {link.label}
               </button>
@@ -298,7 +298,7 @@ export default function Home() {
           </div>
 
           {/* Menu footer */}
-          <div className="mobile-menu-footer flex flex-col items-center gap-4 px-6 py-6" style={{ opacity: 0 }}>
+          <div className="mobile-menu-footer flex flex-col sm:flex-row items-center gap-4 px-6 py-6" style={{ opacity: 0 }}>
             {user ? (
               <>
                 <button
@@ -317,7 +317,7 @@ export default function Home() {
                     {user.email?.charAt(0).toUpperCase()}
                   </div>
                   <span
-                    className="text-[13px] font-medium max-w-[200px] truncate"
+                    className="text-[13px] font-medium max-w-[200px] sm:max-w-none truncate sm:overflow-visible sm:whitespace-normal"
                     style={{ color: "var(--text-primary)" }}
                   >
                     {user.email}
