@@ -50,12 +50,12 @@ export function LoginForm({
           <Mirage size="60" speed="7" color="#f26522" />
         </Link>
         <h1
-          className="text-xl font-medium"
+          className="text-lg sm:text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
           Welcome back
         </h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-xs sm:text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
           Enter your credentials to access your account
         </p>
       </div>
@@ -64,7 +64,7 @@ export function LoginForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="email"
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             Email
@@ -85,14 +85,14 @@ export function LoginForm({
           <div className="flex items-center justify-between">
             <label
               htmlFor="password"
-              className="text-sm font-medium"
+              className="text-xs sm:text-sm font-medium"
               style={{ color: "var(--text-primary)" }}
             >
               Password
             </label>
             <Link
               href="/auth/forgot-password"
-              className="text-xs transition-colors hover:opacity-70"
+              className="text-[11px] sm:text-xs transition-colors hover:opacity-70"
               style={{ color: "var(--accent-orange)" }}
             >
               Forgot password?
@@ -139,7 +139,7 @@ export function LoginForm({
       </form>
 
       <p
-        className="text-center text-sm"
+        className="text-center text-xs sm:text-sm"
         style={{ color: "var(--text-secondary)" }}
       >
         Don&apos;t have an account?{" "}

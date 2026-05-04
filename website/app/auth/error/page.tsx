@@ -11,7 +11,7 @@ async function ErrorContent({
   const params = await searchParams;
 
   return (
-    <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+    <p className="text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
       {params?.error
         ? `Error: ${params.error}`
         : "An unspecified error occurred."}
@@ -37,7 +37,7 @@ export default function Page({
               <AlertCircle size={22} style={{ color: "#dc2626" }} />
             </div>
             <h1
-              className="text-xl font-medium"
+              className="text-lg sm:text-xl font-medium"
               style={{ color: "var(--text-primary)" }}
             >
               Something went wrong

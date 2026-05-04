@@ -46,12 +46,12 @@ export function UpdatePasswordForm({
           <Mirage size="60" speed="7" color="#f26522" />
         </Link>
         <h1
-          className="text-xl font-medium"
+          className="text-lg sm:text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
           Set new password
         </h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-xs sm:text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
           Enter your new password below
         </p>
       </div>
@@ -60,7 +60,7 @@ export function UpdatePasswordForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="password"
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             New password

@@ -53,13 +53,13 @@ export function ForgotPasswordForm({
             <Mail size={22} style={{ color: "var(--accent-orange)" }} />
           </div>
           <h1
-            className="text-xl font-medium"
+            className="text-lg sm:text-xl font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             Check your email
           </h1>
           <p
-            className="text-sm mt-1.5 max-w-xs mx-auto"
+            className="text-xs sm:text-sm mt-1.5 max-w-xs mx-auto"
             style={{ color: "var(--text-secondary)" }}
           >
             If you registered with this email, you&apos;ll receive a password reset link shortly.
@@ -86,12 +86,12 @@ export function ForgotPasswordForm({
           <Mirage size="60" speed="7" color="#f26522" />
         </Link>
         <h1
-          className="text-xl font-medium"
+          className="text-lg sm:text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
           Reset your password
         </h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-xs sm:text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
           Enter your email and we&apos;ll send you a reset link
         </p>
       </div>
@@ -100,7 +100,7 @@ export function ForgotPasswordForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="email"
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             Email
@@ -136,7 +136,7 @@ export function ForgotPasswordForm({
       </form>
 
       <p
-        className="text-center text-sm"
+        className="text-center text-xs sm:text-sm"
         style={{ color: "var(--text-secondary)" }}
       >
         Remember your password?{" "}

@@ -46,6 +46,7 @@ export default function Home() {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setMenuOpen(false);
     });
     return () => subscription.unsubscribe();
   }, []);

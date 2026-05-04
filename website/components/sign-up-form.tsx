@@ -61,12 +61,12 @@ export function SignUpForm({
           <Mirage size="60" speed="7" color="#f26522" />
         </Link>
         <h1
-          className="text-xl font-medium"
+          className="text-lg sm:text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
           Create your account
         </h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-xs sm:text-sm mt-1.5" style={{ color: "var(--text-secondary)" }}>
           Start building ATS-ready resumes in seconds
         </p>
       </div>
@@ -75,7 +75,7 @@ export function SignUpForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="email"
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             Email
@@ -95,7 +95,7 @@ export function SignUpForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="password"
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             Password
@@ -125,7 +125,7 @@ export function SignUpForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="repeat-password"
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: "var(--text-primary)" }}
           >
             Confirm password
@@ -171,7 +171,7 @@ export function SignUpForm({
       </form>
 
       <p
-        className="text-center text-sm"
+        className="text-center text-xs sm:text-sm"
         style={{ color: "var(--text-secondary)" }}
       >
         Already have an account?{" "}

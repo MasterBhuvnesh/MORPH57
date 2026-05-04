@@ -16,13 +16,13 @@ export default function Page() {
               <Mail size={22} style={{ color: "var(--accent-orange)" }} />
             </div>
             <h1
-              className="text-xl font-medium"
+              className="text-lg sm:text-xl font-medium"
               style={{ color: "var(--text-primary)" }}
             >
               Thank you for signing up!
             </h1>
             <p
-              className="text-sm mt-1.5 max-w-xs mx-auto"
+              className="text-xs sm:text-sm mt-1.5 max-w-xs mx-auto"
               style={{ color: "var(--text-secondary)" }}
             >
               Please check your email to confirm your account before signing in.
