@@ -7,6 +7,7 @@ import {
   ArrowRight,
   RefreshCw,
   FolderOpen,
+  X,
 } from "lucide-react";
 import { Mirage } from "ldrs/react";
 import "ldrs/react/Mirage.css";
@@ -14,18 +15,13 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { resumePrompts, promptSets, type ResumePrompt } from "@/constants/resume-prompts";
 
 const navLinks = [
   { label: "Features", hasDropdown: false },
   { label: "Examples", hasDropdown: false },
   { label: "Templates", hasDropdown: false },
   { label: "Pricing", hasDropdown: false },
-];
-
-const promptSets = [
-  ["Frontend developer", "Data analyst", "Software engineer"],
-  ["Product manager", "UX designer", "DevOps engineer"],
-  ["Marketing manager", "Backend developer", "Business analyst"],
 ];
 
 const headingWords = "ATS-Ready Resumes Instantly".split(" ");
@@ -35,8 +31,15 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [promptIndex, setPromptIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
+  const [selectedPrompt, setSelectedPrompt] = useState<ResumePrompt | null>(null);
   const mainRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const handlePromptSelect = (promptName: string) => {
+    const prompt = resumePrompts.find((p) => p.name === promptName) ?? null;
+    setSelectedPrompt(prompt);
+    if (prompt) console.log(prompt.description);
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -392,13 +395,30 @@ export default function Home() {
             </div>
 
             <div className="flex items-center justify-between mt-3">
-              <button
-                className="w-11 h-11 rounded-full flex items-center justify-center transition-colors hover:bg-black/5"
-                style={{ color: "var(--text-secondary)" }}
-                aria-label="Add attachment"
-              >
-                <Plus size={20} />
-              </button>
+              <div className="flex items-center gap-2 min-w-0">
+                {selectedPrompt && (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-full text-white truncate"
+                    style={{ backgroundColor: "var(--accent-orange)" }}
+                  >
+                    <span className="truncate">{selectedPrompt.name}</span>
+                    <button
+                      onClick={() => setSelectedPrompt(null)}
+                      className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                      aria-label="Remove selected prompt"
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                )}
+                <button
+                  className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 transition-colors hover:bg-black/5"
+                  style={{ color: "var(--text-secondary)" }}
+                  aria-label="Add attachment"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
               <button
                 className="submit-btn"
                 style={{ backgroundColor: "var(--accent-orange)" }}
@@ -427,6 +447,7 @@ export default function Home() {
               <button
                 key={prompt}
                 className="prompt-chip"
+                onClick={() => handlePromptSelect(prompt)}
               >
                 {prompt}
               </button>
