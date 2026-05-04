@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Mirage } from "ldrs/react";
 import "ldrs/react/Mirage.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -24,6 +24,14 @@ const navLinks = [
   { label: "Pricing", hasDropdown: false },
 ];
 
+const sectionGradients = [
+  "var(--bg-cream)",
+  "linear-gradient(to bottom, #fef6f0 0%, #fef6f0 15%, #fde8d8 55%, #fef6f0 100%)",
+  "linear-gradient(to bottom, #fef6f0 0%, #fef6f0 15%, #fcd5ba 55%, #fef6f0 100%)",
+  "linear-gradient(to bottom, #fef6f0 0%, #fef6f0 15%, #fadbc4 55%, #fef6f0 100%)",
+  "linear-gradient(to bottom, #fef6f0 0%, #fef6f0 15%, #fce2d0 55%, #fef6f0 100%)",
+];
+
 const headingWords = "ATS-Ready Resumes Instantly".split(" ");
 
 export default function Home() {
@@ -32,14 +40,50 @@ export default function Home() {
   const [promptIndex, setPromptIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<ResumePrompt | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const mainRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const zIndexRef = useRef(10);
 
   const handlePromptSelect = (promptName: string) => {
     const prompt = resumePrompts.find((p) => p.name === promptName) ?? null;
     setSelectedPrompt(prompt);
     if (prompt) console.log(prompt.description);
   };
+
+  const navigateToSection = useCallback((index: number) => {
+    if (index === activeIndex || gsap.isTweening(sectionsRef.current.filter(Boolean))) return;
+    const target = sectionsRef.current[index];
+    if (!target) return;
+
+    zIndexRef.current += 1;
+    target.style.zIndex = String(zIndexRef.current);
+
+    gsap.fromTo(
+      target,
+      { yPercent: 100, rotation: 5 },
+      { yPercent: 0, rotation: 0, duration: 1.2, ease: "power3.inOut" }
+    );
+
+    setActiveIndex(index);
+  }, [activeIndex]);
+
+  const handleNavClick = useCallback((linkIndex: number) => {
+    navigateToSection(linkIndex + 1);
+    setMenuOpen(false);
+  }, [navigateToSection]);
+
+  const handleLogoClick = useCallback(() => {
+    if (activeIndex === 0) return;
+    navigateToSection(0);
+    setMenuOpen(false);
+  }, [activeIndex, navigateToSection]);
+
+  useEffect(() => {
+    document.body.setAttribute("data-page", "home");
+    return () => { document.body.removeAttribute("data-page"); };
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -49,6 +93,13 @@ export default function Home() {
       setMenuOpen(false);
     });
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    sectionsRef.current.forEach((el, i) => {
+      if (!el || i === 0) return;
+      gsap.set(el, { yPercent: 100, rotation: 5 });
+    });
   }, []);
 
   useEffect(() => {
@@ -131,56 +182,34 @@ export default function Home() {
   }, []);
 
   return (
-    <main ref={mainRef} className="min-h-screen flex flex-col relative overflow-hidden" style={{ backgroundColor: "var(--bg-cream)" }}>
-      {/* Subtle background gradient circles */}
-      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
-        <div
-          className="absolute rounded-full w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] md:w-[800px] md:h-[800px]"
-          style={{
-            top: "5%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "radial-gradient(circle, rgba(253, 232, 216, 0.7) 0%, rgba(254, 246, 240, 0) 70%)",
-          }}
-        />
-        <div
-          className="absolute rounded-full w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px]"
-          style={{
-            top: "15%",
-            left: "20%",
-            transform: "translateX(-50%)",
-            background: "radial-gradient(circle, rgba(255, 224, 195, 0.4) 0%, rgba(254, 246, 240, 0) 70%)",
-          }}
-        />
-        <div
-          className="absolute rounded-full hidden sm:block w-[350px] h-[350px] md:w-[500px] md:h-[500px]"
-          style={{
-            top: "10%",
-            right: "-5%",
-            background: "radial-gradient(circle, rgba(255, 230, 210, 0.35) 0%, rgba(254, 246, 240, 0) 70%)",
-          }}
-        />
-      </div>
+    <main ref={mainRef} className="w-full h-screen overflow-hidden relative" style={{ backgroundColor: "var(--bg-cream)", overscrollBehavior: "none" }}>
+      <style>{`body[data-page="home"] { overflow: hidden; overscroll-behavior: none; position: fixed; width: 100%; height: 100%; }`}</style>
 
-      {/* Navigation */}
-      <div className="nav-bar relative z-50 w-full" style={{ opacity: 0 }}>
-        <nav className="w-full flex justify-center px-4 py-3 md:px-8">
+      {/* Fixed Navigation */}
+      <div className="nav-bar fixed top-0 left-0 w-full z-[60]" style={{ opacity: 0 }}>
+        <nav className="w-full flex justify-center px-4 py-3 md:px-8" style={{ backgroundColor: "transparent" }}>
           <div className="w-full max-w-[1400px] flex justify-between items-center">
             <div className="flex items-center gap-4 sm:gap-8">
-              <Link href="/" className="flex items-center gap-2">
+              <button onClick={handleLogoClick} className="flex items-center gap-2">
                 <span className="px-1 sm:px-2">
                   <Mirage size="50" speed="7" color="#f26522" />
                 </span>
                 <span className="text-lg sm:text-xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
                   MORPH57
                 </span>
-              </Link>
+              </button>
 
               <div className="hidden lg:flex items-center gap-1">
-                {navLinks.map((link) => (
+                {navLinks.map((link, i) => (
                   <button
                     key={link.label}
-                    className="nav-link flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-full transition-colors hover:bg-black/5"
+                    onClick={() => handleNavClick(i)}
+                    className="nav-link flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-full transition-colors"
+                    style={
+                      activeIndex === i + 1
+                        ? { color: "var(--accent-orange)", backgroundColor: "rgba(242, 101, 34, 0.08)" }
+                        : {}
+                    }
                   >
                     {link.label}
                     {link.hasDropdown && <ChevronDown size={14} />}
@@ -267,16 +296,15 @@ export default function Home() {
           className="lg:hidden fixed inset-0 z-[100] flex flex-col"
           style={{ backgroundColor: "var(--bg-cream)" }}
         >
-          {/* Menu header */}
           <div className="flex justify-between items-center px-4 py-3">
-            <Link href="/" className="flex items-center gap-2">
+            <button onClick={() => { handleLogoClick(); setMenuOpen(false); }} className="flex items-center gap-2">
               <span className="px-1 sm:px-2">
                 <Mirage size="50" speed="7" color="#f26522" />
               </span>
               <span className="text-lg sm:text-xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
                 MORPH57
               </span>
-            </Link>
+            </button>
             <button
               className="p-2 rounded-lg"
               aria-label="Close menu"
@@ -288,20 +316,23 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Menu links */}
           <div className="flex-1 flex flex-col px-6 pt-4">
-            {navLinks.map((link) => (
+            {navLinks.map((link, i) => (
               <button
                 key={link.label}
+                onClick={() => handleNavClick(i)}
                 className="mobile-menu-link flex items-center justify-between py-5 text-[23px] font-normal border-b"
-                style={{ color: "#3a3a3a", borderColor: "var(--border-light)", opacity: 0 }}
+                style={{
+                  color: activeIndex === i + 1 ? "var(--accent-orange)" : "#3a3a3a",
+                  borderColor: "var(--border-light)",
+                  opacity: 0,
+                }}
               >
                 {link.label}
               </button>
             ))}
           </div>
 
-          {/* Menu footer */}
           <div className="mobile-menu-footer flex flex-col sm:flex-row items-center gap-4 px-6 py-6" style={{ opacity: 0 }}>
             {user ? (
               <>
@@ -350,112 +381,216 @@ export default function Home() {
         </div>
       )}
 
-      {/* Banner */}
-      <div className="banner relative z-10 flex justify-center px-4 pt-2 pb-4" style={{ opacity: 0 }}>
-        <div
-          className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm text-center"
-          style={{ backgroundColor: "#fde8d8", color: "var(--text-primary)" }}
-        >
-          <span>Smart resume generation, zero setup required.</span>
-          <Link
-            href="#"
-            className="font-semibold underline underline-offset-2 hover:opacity-80 whitespace-nowrap"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Explore
-          </Link>
+      {/* === SECTIONS STACK === */}
+
+      {/* Section 0: Hero */}
+      <div
+        ref={(el) => { sectionsRef.current[0] = el; }}
+        className="absolute top-0 left-0 w-full h-screen origin-bottom-left flex flex-col overflow-hidden"
+        style={{ background: sectionGradients[0], zIndex: 1 }}
+      >
+        {/* Background gradients */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute rounded-full w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] md:w-[800px] md:h-[800px]"
+            style={{
+              top: "5%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "radial-gradient(circle, rgba(253, 232, 216, 0.7) 0%, rgba(254, 246, 240, 0) 70%)",
+            }}
+          />
+          <div
+            className="absolute rounded-full w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px]"
+            style={{
+              top: "15%",
+              left: "20%",
+              transform: "translateX(-50%)",
+              background: "radial-gradient(circle, rgba(255, 224, 195, 0.4) 0%, rgba(254, 246, 240, 0) 70%)",
+            }}
+          />
+          <div
+            className="absolute rounded-full hidden sm:block w-[350px] h-[350px] md:w-[500px] md:h-[500px]"
+            style={{
+              top: "10%",
+              right: "-5%",
+              background: "radial-gradient(circle, rgba(255, 230, 210, 0.35) 0%, rgba(254, 246, 240, 0) 70%)",
+            }}
+          />
         </div>
-      </div>
 
-      {/* Hero Section */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pt-6 sm:pt-8 md:pt-16 pb-8">
-        <span className="hero-heading text-center flex flex-wrap justify-center gap-x-[0.3em] px-2">
-          {headingWords.map((word, i) => (
-            <span key={i} className="hero-word inline-block" style={{ opacity: 0 }}>
-              {word}
-            </span>
-          ))}
-        </span>
+        {/* Banner */}
+        <div className="banner relative z-10 flex justify-center px-4 pt-16 sm:pt-[72px] pb-4" style={{ opacity: 0 }}>
+          <div
+            className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm text-center"
+            style={{ backgroundColor: "#fde8d8", color: "var(--text-primary)" }}
+          >
+            <span>Smart resume generation, zero setup required.</span>
+            <Link
+              href="#"
+              className="font-semibold underline underline-offset-2 hover:opacity-80 whitespace-nowrap"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Explore
+            </Link>
+          </div>
+        </div>
 
-        <p className="mt-4 sm:mt-5 text-center max-w-lg hero-subtitle px-4" style={{ opacity: 0 }}>
-          Turn job descriptions into tailored LaTeX resumes
-        </p>
+        {/* Hero Content */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pt-2 sm:pt-4 md:pt-8 pb-8">
+          <span className="hero-heading text-center flex flex-wrap justify-center gap-x-[0.3em] px-2">
+            {headingWords.map((word, i) => (
+              <span key={i} className="hero-word inline-block" style={{ opacity: 0 }}>
+                {word}
+              </span>
+            ))}
+          </span>
 
-        {/* Input Area */}
-        <div className="input-card-wrapper mt-8 sm:mt-10 w-full max-w-2xl" style={{ opacity: 0 }}>
-          <div className="input-card">
-            <div className="flex items-center gap-3">
-              <input
-                type="text"
-                placeholder="Paste job description here"
-                className="flex-1 text-sm sm:text-[15px] outline-none bg-transparent"
-                style={{ color: "var(--text-primary)" }}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-              />
-            </div>
+          <p className="mt-4 sm:mt-5 text-center max-w-lg hero-subtitle px-4" style={{ opacity: 0 }}>
+            Turn job descriptions into tailored LaTeX resumes
+          </p>
 
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex items-center gap-2 min-w-0">
-                {selectedPrompt && (
-                  <span
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-full text-white truncate"
-                    style={{ backgroundColor: "var(--accent-orange)" }}
-                  >
-                    <span className="truncate">{selectedPrompt.name}</span>
-                    <button
-                      onClick={() => setSelectedPrompt(null)}
-                      className="flex-shrink-0 hover:opacity-70 transition-opacity"
-                      aria-label="Remove selected prompt"
+          {/* Input Area */}
+          <div className="input-card-wrapper mt-8 sm:mt-10 w-full max-w-2xl" style={{ opacity: 0 }}>
+            <div className="input-card">
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  placeholder="Paste job description here"
+                  className="flex-1 text-sm sm:text-[15px] outline-none bg-transparent"
+                  style={{ color: "var(--text-primary)" }}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  {selectedPrompt && (
+                    <span
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-full text-white truncate"
+                      style={{ backgroundColor: "var(--accent-orange)" }}
                     >
-                      <X size={14} />
-                    </button>
-                  </span>
-                )}
+                      <span className="truncate">{selectedPrompt.name}</span>
+                      <button
+                        onClick={() => setSelectedPrompt(null)}
+                        className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                        aria-label="Remove selected prompt"
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  )}
+                  <button
+                    className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 transition-colors hover:bg-black/5"
+                    style={{ color: "var(--text-secondary)" }}
+                    aria-label="Add attachment"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </div>
                 <button
-                  className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 transition-colors hover:bg-black/5"
-                  style={{ color: "var(--text-secondary)" }}
-                  aria-label="Add attachment"
+                  className="submit-btn"
+                  style={{ backgroundColor: "var(--accent-orange)" }}
+                  aria-label="Submit"
                 >
-                  <Plus size={20} />
+                  <ArrowRight size={18} color="white" />
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Example Prompts */}
+          <div className="example-section mt-8 sm:mt-10 flex flex-col items-center gap-3" style={{ opacity: 0 }}>
+            <div className="flex items-center gap-2 text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
+              <span>Try a resume example</span>
               <button
-                className="submit-btn"
-                style={{ backgroundColor: "var(--accent-orange)" }}
-                aria-label="Submit"
+                className="p-1 rounded transition-colors"
+                aria-label="Refresh examples"
+                onClick={() => setPromptIndex((prev) => (prev + 1) % promptSets.length)}
               >
-                <ArrowRight size={18} color="white" />
+                <RefreshCw size={14} />
               </button>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {promptSets[promptIndex].map((prompt) => (
+                <button
+                  key={prompt}
+                  className="prompt-chip"
+                  onClick={() => handlePromptSelect(prompt)}
+                >
+                  {prompt}
+                </button>
+              ))}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Example Prompts */}
-        <div className="example-section mt-8 sm:mt-10 flex flex-col items-center gap-3" style={{ opacity: 0 }}>
-          <div className="flex items-center gap-2 text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
-            <span>Try a resume example</span>
-            <button
-              className="p-1 rounded transition-colors"
-              aria-label="Refresh examples"
-              onClick={() => setPromptIndex((prev) => (prev + 1) % promptSets.length)}
-            >
-              <RefreshCw size={14} />
-            </button>
-          </div>
-          <div className="flex flex-wrap justify-center gap-2">
-            {promptSets[promptIndex].map((prompt) => (
-              <button
-                key={prompt}
-                className="prompt-chip"
-                onClick={() => handlePromptSelect(prompt)}
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
+      {/* Section 1: Features */}
+      <div
+        ref={(el) => { sectionsRef.current[1] = el; }}
+        className="absolute top-0 left-0 w-full h-screen origin-bottom-left overflow-y-auto"
+        style={{ background: sectionGradients[1], overscrollBehavior: "contain" }}
+      >
+        <div className="min-h-screen flex flex-col items-center justify-center pt-16 px-6">
+          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
+            Features
+          </h2>
+          <p className="mt-3 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            Coming soon — AI-powered resume tools
+          </p>
         </div>
       </div>
+
+      {/* Section 2: Examples */}
+      <div
+        ref={(el) => { sectionsRef.current[2] = el; }}
+        className="absolute top-0 left-0 w-full h-screen origin-bottom-left overflow-y-auto"
+        style={{ background: sectionGradients[2], overscrollBehavior: "contain" }}
+      >
+        <div className="min-h-screen flex flex-col items-center justify-center pt-16 px-6">
+          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
+            Examples
+          </h2>
+          <p className="mt-3 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            Coming soon — sample resumes and use cases
+          </p>
+        </div>
+      </div>
+
+      {/* Section 3: Templates */}
+      <div
+        ref={(el) => { sectionsRef.current[3] = el; }}
+        className="absolute top-0 left-0 w-full h-screen origin-bottom-left overflow-y-auto"
+        style={{ background: sectionGradients[3], overscrollBehavior: "contain" }}
+      >
+        <div className="min-h-screen flex flex-col items-center justify-center pt-16 px-6">
+          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
+            Templates
+          </h2>
+          <p className="mt-3 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            Coming soon — professional resume templates
+          </p>
+        </div>
+      </div>
+
+      {/* Section 4: Pricing */}
+      <div
+        ref={(el) => { sectionsRef.current[4] = el; }}
+        className="absolute top-0 left-0 w-full h-screen origin-bottom-left overflow-y-auto"
+        style={{ background: sectionGradients[4], overscrollBehavior: "contain" }}
+      >
+        <div className="min-h-screen flex flex-col items-center justify-center pt-16 px-6">
+          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
+            Pricing
+          </h2>
+          <p className="mt-3 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            Coming soon — plans and pricing details
+          </p>
+        </div>
+      </div>
+
     </main>
   );
 }
