@@ -6,11 +6,14 @@ import {
   Plus,
   ArrowRight,
   RefreshCw,
+  FolderOpen,
 } from "lucide-react";
 import { Mirage } from "ldrs/react";
 import "ldrs/react/Mirage.css";
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
   { label: "Features", hasDropdown: false },
@@ -19,10 +22,10 @@ const navLinks = [
   { label: "Pricing", hasDropdown: false },
 ];
 
-const examplePrompts = [
-  "Frontend developer",
-  "Data analyst",
-  "Software engineer",
+const promptSets = [
+  ["Frontend developer", "Data analyst", "Software engineer"],
+  ["Product manager", "UX designer", "DevOps engineer"],
+  ["Marketing manager", "Backend developer", "Business analyst"],
 ];
 
 const headingWords = "ATS-Ready Resumes Instantly".split(" ");
@@ -30,10 +33,46 @@ const headingWords = "ATS-Ready Resumes Instantly".split(" ");
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [promptIndex, setPromptIndex] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen || !menuRef.current) return;
     const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".mobile-menu-link",
+        { opacity: 0, x: -30 },
+        { opacity: 1, x: 0, duration: 0.4, stagger: 0.08, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        ".mobile-menu-footer",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.4, delay: 0.3, ease: "power3.out" }
+      );
+    }, menuRef);
+    return () => ctx.revert();
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const ctx = gsap.context(() => {
+      if (prefersReducedMotion) {
+        gsap.set([".nav-bar", ".banner", ".hero-word", ".hero-subtitle", ".input-card-wrapper", ".example-section"], { opacity: 1 });
+        return;
+      }
+
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.fromTo(
@@ -143,31 +182,62 @@ export default function Home() {
                     {link.hasDropdown && <ChevronDown size={14} />}
                   </button>
                 ))}
-                <Link
-                  href="#"
-                  className="flex items-center gap-1.5 ml-3 px-3 py-1.5 text-sm font-semibold rounded-full text-white"
-                  style={{ backgroundColor: "var(--accent-orange)" }}
-                >
-                  Try Free
-                </Link>
+                {!user && (
+                  <Link
+                    href="/auth/sign-up"
+                    className="flex items-center gap-1.5 ml-3 px-3 py-1.5 text-sm font-semibold rounded-full text-white"
+                    style={{ backgroundColor: "var(--accent-orange)" }}
+                  >
+                    Try Free
+                  </Link>
+                )}
               </div>
             </div>
 
             <div className="flex items-center gap-3 sm:gap-4">
-              <Link
-                href="/auth/login"
-                className="hidden lg:block text-sm font-medium transition-colors hover:opacity-80"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Log in
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                className="hidden lg:block text-sm font-medium px-5 py-2 rounded-full border-2 transition-colors hover:bg-orange-50"
-                style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
-              >
-                Create account
-              </Link>
+              {user ? (
+                <>
+                  <button
+                    onClick={() => console.log("Records clicked", user?.email)}
+                    className="records-btn hidden lg:flex items-center gap-1.5 text-sm font-medium px-5 py-2 rounded-full border-2"
+                    style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
+                  >
+                    <FolderOpen size={15} />
+                    Records
+                  </button>
+                  <div className="hidden lg:flex items-center gap-2.5">
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0"
+                      style={{ backgroundColor: "var(--accent-orange)" }}
+                    >
+                      {user.email?.charAt(0).toUpperCase()}
+                    </div>
+                    <span
+                      className="text-[13px] font-medium max-w-[180px] truncate"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      {user.email}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="hidden lg:block text-sm font-medium transition-colors hover:opacity-80"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/auth/sign-up"
+                    className="hidden lg:block text-sm font-medium px-5 py-2 rounded-full border-2 transition-colors hover:bg-orange-50"
+                    style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
+                  >
+                    Create account
+                  </Link>
+                </>
+              )}
               <button
                 className="lg:hidden p-2 rounded-lg"
                 aria-label="Open menu"
@@ -189,6 +259,7 @@ export default function Home() {
       {/* Fullscreen mobile menu */}
       {menuOpen && (
         <div
+          ref={menuRef}
           className="lg:hidden fixed inset-0 z-[100] flex flex-col"
           style={{ backgroundColor: "var(--bg-cream)" }}
         >
@@ -218,8 +289,8 @@ export default function Home() {
             {navLinks.map((link) => (
               <button
                 key={link.label}
-                className="flex items-center justify-between py-5 text-2xl font-medium border-b"
-                style={{ color: "var(--text-primary)", borderColor: "var(--border-light)" }}
+                className="mobile-menu-link flex items-center justify-between py-5 text-2xl font-medium border-b"
+                style={{ color: "var(--text-primary)", borderColor: "var(--border-light)", opacity: 0 }}
               >
                 {link.label}
               </button>
@@ -227,21 +298,50 @@ export default function Home() {
           </div>
 
           {/* Menu footer */}
-          <div className="flex items-center justify-center gap-3 px-6 py-6">
-            <Link
-              href="/auth/login"
-              className="text-sm font-medium px-6 py-2.5 rounded-full transition-colors hover:bg-black/5"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Log in
-            </Link>
-            <Link
-              href="/auth/sign-up"
-              className="text-sm font-medium px-6 py-2.5 rounded-full border-2 transition-colors hover:bg-orange-50"
-              style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
-            >
-              Create account
-            </Link>
+          <div className="mobile-menu-footer flex flex-col items-center gap-4 px-6 py-6" style={{ opacity: 0 }}>
+            {user ? (
+              <>
+                <button
+                  onClick={() => console.log("Records clicked", user?.email)}
+                  className="records-btn flex items-center gap-1.5 text-sm font-medium px-6 py-2.5 rounded-full border-2"
+                  style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
+                >
+                  <FolderOpen size={15} />
+                  Records
+                </button>
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0"
+                    style={{ backgroundColor: "var(--accent-orange)" }}
+                  >
+                    {user.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <span
+                    className="text-[13px] font-medium max-w-[200px] truncate"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {user.email}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-medium px-6 py-2.5 rounded-full transition-colors hover:bg-black/5"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/auth/sign-up"
+                  className="text-sm font-medium px-6 py-2.5 rounded-full border-2 transition-colors hover:bg-orange-50"
+                  style={{ color: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}
+                >
+                  Create account
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -273,7 +373,7 @@ export default function Home() {
           ))}
         </span>
 
-        <p className="mt-4 sm:mt-5 text-center max-w-lg hero-subtitle px-4">
+        <p className="mt-4 sm:mt-5 text-center max-w-lg hero-subtitle px-4" style={{ opacity: 0 }}>
           Turn job descriptions into tailored LaTeX resumes
         </p>
 
@@ -293,7 +393,7 @@ export default function Home() {
 
             <div className="flex items-center justify-between mt-3">
               <button
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-black/5"
+                className="w-11 h-11 rounded-full flex items-center justify-center transition-colors hover:bg-black/5"
                 style={{ color: "var(--text-secondary)" }}
                 aria-label="Add attachment"
               >
@@ -317,12 +417,13 @@ export default function Home() {
             <button
               className="p-1 rounded transition-colors"
               aria-label="Refresh examples"
+              onClick={() => setPromptIndex((prev) => (prev + 1) % promptSets.length)}
             >
               <RefreshCw size={14} />
             </button>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            {examplePrompts.map((prompt) => (
+            {promptSets[promptIndex].map((prompt) => (
               <button
                 key={prompt}
                 className="prompt-chip"

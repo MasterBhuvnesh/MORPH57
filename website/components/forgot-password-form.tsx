@@ -110,7 +110,7 @@ export function ForgotPasswordForm({
             type="email"
             placeholder="you@example.com"
             required
-            autoComplete="email"
+            autoComplete="off"
             className="auth-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

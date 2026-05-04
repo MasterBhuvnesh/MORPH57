@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { Mirage } from "ldrs/react";
 import "ldrs/react/Mirage.css";
 
@@ -16,6 +16,7 @@ export function UpdatePasswordForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -27,7 +28,7 @@ export function UpdatePasswordForm({
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      router.push("/protected");
+      router.push("/");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -64,15 +65,26 @@ export function UpdatePasswordForm({
           >
             New password
           </label>
-          <input
-            id="password"
-            type="password"
-            required
-            autoComplete="new-password"
-            className="auth-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              required
+              autoComplete="off"
+              className="auth-input pr-10"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-60"
+              style={{ color: "var(--text-secondary)" }}
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
 
         {error && (
