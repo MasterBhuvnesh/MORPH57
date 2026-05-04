@@ -8,12 +8,18 @@ import {
   RefreshCw,
   FolderOpen,
   X,
+  FileText,
+  Code,
+  Search,
+  Sparkles,
 } from "lucide-react";
 import { Mirage } from "ldrs/react";
 import "ldrs/react/Mirage.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 import { createClient } from "@/lib/supabase/client";
+import { OrbitingCircles } from "@/components/ui/orbiting-circles";
+import { AvatarCircles } from "@/components/ui/avatar-circles";
 import type { User } from "@supabase/supabase-js";
 import { resumePrompts, promptSets, type ResumePrompt } from "@/constants/resume-prompts";
 
@@ -63,7 +69,28 @@ export default function Home() {
     gsap.fromTo(
       target,
       { yPercent: 100, rotation: 5 },
-      { yPercent: 0, rotation: 0, duration: 1.2, ease: "power3.inOut" }
+      {
+        yPercent: 0,
+        rotation: 0,
+        duration: 1.2,
+        ease: "power3.inOut",
+        onComplete: () => {
+          if (index === 1) {
+            const headers = target.querySelectorAll(".feature-header");
+            const cards = target.querySelectorAll(".feature-card");
+            gsap.fromTo(
+              headers,
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }
+            );
+            gsap.fromTo(
+              cards,
+              { opacity: 0, y: 30, scale: 0.95 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.12, delay: 0.25, ease: "power3.out" }
+            );
+          }
+        },
+      }
     );
 
     setActiveIndex(index);
@@ -187,7 +214,7 @@ export default function Home() {
 
       {/* Fixed Navigation */}
       <div className="nav-bar fixed top-0 left-0 w-full z-[60]" style={{ opacity: 0 }}>
-        <nav className="w-full flex justify-center px-4 py-3 md:px-8" style={{ backgroundColor: "transparent" }}>
+        <nav className="w-full flex justify-center px-4 py-3 md:px-8 backdrop-blur-md" style={{ backgroundColor: "rgba(254, 246, 240, 0.75)" }}>
           <div className="w-full max-w-[1400px] flex justify-between items-center">
             <div className="flex items-center gap-4 sm:gap-8">
               <button onClick={handleLogoClick} className="flex items-center gap-2">
@@ -533,13 +560,222 @@ export default function Home() {
         className="absolute top-0 left-0 w-full h-screen origin-bottom-left overflow-y-auto"
         style={{ background: sectionGradients[1], overscrollBehavior: "contain" }}
       >
-        <div className="min-h-screen flex flex-col items-center justify-center pt-16 px-6">
-          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>
-            Features
-          </h2>
-          <p className="mt-3 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
-            Coming soon — AI-powered resume tools
-          </p>
+        <div className="flex flex-col items-center pt-20 sm:pt-24 pb-12 px-4 sm:px-6 md:px-8">
+          {/* Section Header */}
+          <div className="text-center max-w-xl mb-10 sm:mb-14">
+            <div
+              className="feature-header inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm mb-5"
+              style={{ backgroundColor: "#fde8d8", color: "var(--text-primary)", opacity: 0 }}
+            >
+              WHAT YOU GET
+            </div>
+            <h2
+              className="feature-header text-2xl sm:text-3xl md:text-[2.5rem] font-normal tracking-tight leading-tight"
+              style={{ color: "var(--text-primary)", opacity: 0 }}
+            >
+              Everything you need to land interviews
+            </h2>
+          </div>
+
+          {/* Row 1: 3 cards */}
+          <div className="w-full max-w-[1100px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-4 sm:mb-5">
+
+            {/* Card 1: Instant Generation */}
+            <div
+              className="feature-card rounded-2xl border overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+              style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)", opacity: 0 }}
+            >
+              <div className="h-[180px] sm:h-[200px] flex items-center justify-center relative" style={{ backgroundColor: "#fef6f0" }}>
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl border px-4 py-3 flex items-center gap-2" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "", color: "var(--accent-orange)" }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <span className="text-xs font-medium" style={{ color: "var(--text-primary)" }}>resume.pdf</span>
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--accent-orange)" }}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <div className="rounded-xl border px-3 py-1.5 text-[11px] font-semibold text-white" style={{ backgroundColor: "var(--accent-orange)", borderColor: "var(--accent-orange)" }}>
+                    Ready
+                  </div>
+                </div>
+              </div>
+              <div className="p-5 sm:p-6">
+                <h3 className="text-[15px] sm:text-base font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+                  Instant resume generation from any JD
+                </h3>
+                <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Paste a job description and get an ATS-optimized, tailored resume in seconds.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2: LaTeX-Powered */}
+            <div
+              className="feature-card rounded-2xl border overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+              style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)", opacity: 0 }}
+            >
+              <div className="h-[180px] sm:h-[200px] flex items-center justify-center relative" style={{ backgroundColor: "#fef6f0" }}>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="rounded-xl border px-5 py-3" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                    <span className="text-lg font-normal tracking-tight" style={{ color: "var(--text-primary)" }}>L<span className="text-sm align-super">A</span>T<span className="text-sm align-sub">E</span>X</span>
+                  </div>
+                  <div className="flex gap-1.5">
+                    {[...Array(3)].map((_, j) => (
+                      <div key={j} className="rounded-md h-1.5" style={{ width: `${40 + j * 20}px`, backgroundColor: j === 1 ? "var(--accent-orange)" : "var(--border-light)" }} />
+                    ))}
+                  </div>
+                  <div className="flex gap-1.5">
+                    {[...Array(2)].map((_, j) => (
+                      <div key={j} className="rounded-md h-1.5" style={{ width: `${50 + j * 15}px`, backgroundColor: "var(--border-light)" }} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="p-5 sm:p-6">
+                <h3 className="text-[15px] sm:text-base font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+                  LaTeX-powered professional formatting
+                </h3>
+                <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Pixel-perfect typography that stands out from Word templates.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: Smart JD Parsing */}
+            <div
+              className="feature-card rounded-2xl border overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-1 sm:col-span-2 lg:col-span-1"
+              style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)", opacity: 0 }}
+            >
+              <div className="h-[180px] sm:h-[200px] flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: "#fef6f0" }}>
+                <div className="relative flex items-center justify-center w-full h-full">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center z-10" style={{ backgroundColor: "#fde8d8" }}>
+                    <Search size={18} style={{ color: "var(--accent-orange)" }} />
+                  </div>
+                  <OrbitingCircles radius={60} duration={20} speed={1} iconSize={28} path={true}>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center border" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                      <span className="text-[9px] font-bold" style={{ color: "var(--accent-orange)" }}>JS</span>
+                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center border" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                      <Code size={12} style={{ color: "var(--accent-orange)" }} />
+                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center border" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                      <span className="text-[9px] font-bold" style={{ color: "var(--accent-orange)" }}>TS</span>
+                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center border" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                      <Sparkles size={12} style={{ color: "var(--accent-orange)" }} />
+                    </div>
+                  </OrbitingCircles>
+                </div>
+              </div>
+              <div className="p-5 sm:p-6">
+                <h3 className="text-[15px] sm:text-base font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+                  Smart JD parsing with AI
+                </h3>
+                <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  AI extracts key skills and requirements so your resume speaks the right language.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: 2 wider cards */}
+          <div className="w-full max-w-[1100px] grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+
+            {/* Card 4: Multi-Format Export */}
+            <div
+              className="feature-card rounded-2xl border overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+              style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)", opacity: 0 }}
+            >
+              <div className="h-[180px] sm:h-[200px] flex items-center justify-center relative" style={{ backgroundColor: "#fef6f0" }}>
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-3">
+                    {/* PDF card */}
+                    <div className="rounded-2xl border p-3 flex flex-col items-center gap-2 w-[90px]" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#dc2626" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      <span className="text-[10px] font-bold" style={{ color: "#dc2626" }}>.PDF</span>
+                      <div className="flex flex-col gap-1 w-full">
+                        <div className="h-1 rounded-full w-full" style={{ backgroundColor: "var(--border-light)" }} />
+                        <div className="h-1 rounded-full w-3/4" style={{ backgroundColor: "var(--border-light)" }} />
+                      </div>
+                    </div>
+
+
+                    {/* TEX card */}
+                    <div className="rounded-2xl border p-3 flex flex-col items-center gap-2 w-[90px]" style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)" }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--accent-orange)" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                      <span className="text-[10px] font-bold" style={{ color: "var(--accent-orange)" }}>.TEX</span>
+                      <div className="flex flex-col gap-1 w-full">
+                        <div className="h-1 rounded-full w-full" style={{ backgroundColor: "var(--accent-orange)", opacity: 0.3 }} />
+                        <div className="h-1 rounded-full w-2/3" style={{ backgroundColor: "var(--accent-orange)", opacity: 0.3 }} />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div className="p-5 sm:p-6">
+                <h3 className="text-[15px] sm:text-base font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+                  Export in multiple formats
+                </h3>
+                <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Download as PDF or grab the LaTeX source to customize further.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 5: Resume History */}
+            <div
+              className="feature-card rounded-2xl border overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+              style={{ backgroundColor: "var(--surface-white)", borderColor: "var(--border-light)", opacity: 0 }}
+            >
+              <div className="h-[180px] sm:h-[200px] flex flex-col items-center justify-center gap-4 relative" style={{ backgroundColor: "#fef6f0" }}>
+                <div className="flex -space-x-3">
+                  {["B", "A", "S", "M"].map((letter, i) => (
+                    <div
+                      key={i}
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white border-2 border-white"
+                      style={{ backgroundColor: ["#f26522", "#f0894a", "#e8a06e", "#d4886a"][i] }}
+                    >
+                      {letter}
+                    </div>
+                  ))}
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-semibold border-2 border-white"
+                    style={{ backgroundColor: "#fde8d8", color: "var(--accent-orange)" }}
+                  >
+                    +20
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {[
+                    { role: "Frontend Dev", active: true },
+                    { role: "Full-Stack" },
+                    { role: "React Dev" },
+                  ].map((item) => (
+                    <div
+                      key={item.role}
+                      className="rounded-full border px-2.5 py-1 text-[10px] font-medium"
+                      style={{
+                        backgroundColor: item.active ? "var(--accent-orange)" : "var(--surface-white)",
+                        borderColor: item.active ? "var(--accent-orange)" : "var(--border-light)",
+                        color: item.active ? "#ffffff" : "var(--text-secondary)",
+                      }}
+                    >
+                      {item.role}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-5 sm:p-6">
+                <h3 className="text-[15px] sm:text-base font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+                  Track your resume history
+                </h3>
+                <p className="text-xs sm:text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Revisit and manage all your past resumes and job descriptions in one place.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

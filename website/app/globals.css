@@ -19,6 +19,14 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
 html, html * {
   cursor: url("/cursor.png") 2 2, auto;
 }
